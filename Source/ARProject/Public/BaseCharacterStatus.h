@@ -25,15 +25,21 @@ public:
     virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& newValue) override;
     virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 
+    void AdjustChangeMaxStatus(FGameplayAttributeData& affectAttribute, const FGameplayAttributeData& maxAttribute, float newValue, const FGameplayAttribute& affectAttributeProperty);
+
+    UPROPERTY(BlueprintReadWrite)
     FGameplayAttributeData _health;
     ATTRIBUTE_ACCESSORS(UBaseCharacterStatus, _health)
 
+    UPROPERTY(BlueprintReadWrite)
     FGameplayAttributeData _maxHealth;
     ATTRIBUTE_ACCESSORS(UBaseCharacterStatus, _maxHealth)
 
+    UPROPERTY(BlueprintReadWrite)
     FGameplayAttributeData _stamina;
     ATTRIBUTE_ACCESSORS(UBaseCharacterStatus, _stamina)
 
+    UPROPERTY(BlueprintReadWrite)
     FGameplayAttributeData _maxStamina;
     ATTRIBUTE_ACCESSORS(UBaseCharacterStatus, _maxStamina)
 };

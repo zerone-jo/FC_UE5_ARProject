@@ -30,6 +30,7 @@ void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	InitializeStatus();
 }
 
 // Called every frame
@@ -44,5 +45,28 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void ABaseCharacter::InitializeStatus()
+{
+	if (nullptr == _asc)
+	{
+		return;
+	}
+
+	if (nullptr == _defaultStatusEffect)
+	{
+		UE_LOG(LogTemp, Error, TEXT("(%s)캐릭터의 기본 스테이터스 이펙트가 존재 하지 않습니다."), *GetName());
+
+		return;
+	}
+
+	auto context = _asc->MakeEffectContext();
+	context.AddSourceObject(this);
+	auto handle = _asc->MakeOutgoingSpec(_defaultStatusEffect, 0, context);
+	if (handle.IsValid())
+	{
+		_asc->ApplyGameplayEffectSpecToTarget(*handle.Data.Get(), _asc);
+	}
 }
 

@@ -17,12 +17,18 @@ public:
 	ABaseCharacter();
 
 	class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	UFUNCTION(BlueprintCallable)
 	class UBaseCharacterStatus* GetStatus() const;
+
 protected:
 	UPROPERTY()
 	class UAbilitySystemComponent* _asc;
 	UPROPERTY()
 	class UBaseCharacterStatus* _status;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Status")
+	TSubclassOf<class UGameplayEffect> _defaultStatusEffect;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -34,4 +40,5 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void InitializeStatus();
 };
