@@ -15,5 +15,6 @@ class ARPROJECT_API UBasicDamageCalculate : public UGameplayEffectExecutionCalcu
 	GENERATED_BODY()
 	
 public:
+	UBasicDamageCalculate();
 	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
 };

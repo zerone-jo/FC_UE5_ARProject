@@ -68,5 +68,31 @@ void ABaseCharacter::InitializeStatus()
 	{
 		_asc->ApplyGameplayEffectSpecToTarget(*handle.Data.Get(), _asc);
 	}
+
+	GiveDefaultAbilities();
+}
+
+void ABaseCharacter::GiveDefaultAbilities()
+{
+	if (nullptr == _asc)
+	{
+		return;
+	}
+
+	for (auto& ability : _defaultAbilities)
+	{
+		_asc->GiveAbility(FGameplayAbilitySpec(ability, 0, 0, this));
+	}
+}
+
+void ABaseCharacter::TryActiveAbility(int32 id)
+{
+	auto spec = _asc->FindAbilitySpecFromInputID(id);
+	if (nullptr == spec)
+	{
+		return;
+	}
+
+	_asc->TryActivateAbility(spec->Handle);
 }
 
