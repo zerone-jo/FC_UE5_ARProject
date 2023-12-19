@@ -13,6 +13,8 @@
  	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
  	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDHPCanged, float, hpRate);
+
 /**
  * 
  */
@@ -50,4 +52,7 @@ public:
     UPROPERTY(BlueprintReadWrite)
     FGameplayAttributeData _defencePoint;
     ATTRIBUTE_ACCESSORS(UBaseCharacterStatus, _defencePoint)
+
+    UPROPERTY(BlueprintAssignable, Category = "Event")
+    FDHPCanged HPChanged;
 };

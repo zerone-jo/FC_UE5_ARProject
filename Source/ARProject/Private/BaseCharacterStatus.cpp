@@ -26,6 +26,11 @@ void UBaseCharacterStatus::PostGameplayEffectExecute(const FGameplayEffectModCal
 	if (Data.EvaluatedData.Attribute == Get_healthAttribute())
 	{
 		Set_health(FMath::Clamp(Get_health(), 0.f, Get_maxHealth()));
+
+		if (HPChanged.IsBound()) 
+		{
+			HPChanged.Broadcast(Get_health() / Get_maxHealth());
+		}
 	}
 	else if (Data.EvaluatedData.Attribute == Get_staminaAttribute())
 	{
