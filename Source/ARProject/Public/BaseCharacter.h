@@ -33,6 +33,11 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "AbilitySystem|Ability")
 	TArray < TSubclassOf<class UGameplayAbility>> _defaultAbilities;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName _characterKey;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class UDataTable* _pickupTable;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
