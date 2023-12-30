@@ -4,6 +4,9 @@
 #include "BaseCharacter.h"
 #include "BaseCharacterStatus.h"
 #include "BCAbilitySystemComponent.h"
+#include "Components/SplineComponent.h"
+#include "Components/SplineMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -31,6 +34,73 @@ void ABaseCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	InitializeStatus();
+}
+
+void ABaseCharacter::UpdateTrajectory(FVector startPos, FVector endPos, float arc, USplineComponent* spline, UStaticMesh* pMesh)
+{
+	ClearTrajectory();
+
+	if (UGameplayStatics::SuggestProjectileVelocity_CustomArc(this, _projectileVelocity, startPos, endPos, GetWorld()->GetGravityZ(), arc))
+	{
+		FPredictProjectilePathParams param(5.f, startPos, _projectileVelocity, 5.f);
+		FPredictProjectilePathResult result;
+		UGameplayStatics::PredictProjectilePath(this, param, result);
+
+		{
+			auto len = result.PathData.Num();
+			for (int ii = 0; ii < len; ++ii)
+			{
+				spline->AddSplinePointAtIndex(result.PathData[ii].Location, ii, ESplineCoordinateSpace::World);
+			}
+
+			_currentSpline = spline;
+		}
+
+		{
+			auto len = spline->GetNumberOfSplinePoints();
+			for (int ii = 0; ii < len; ++ii)
+			{
+				USplineMeshComponent* splineMesh = NewObject< USplineMeshComponent>(this, USplineMeshComponent::StaticClass());
+				splineMesh->SetForwardAxis(ESplineMeshAxis::Z);
+				splineMesh->SetStaticMesh(pMesh);
+				splineMesh->SetMobility(EComponentMobility::Movable);
+				splineMesh->CreationMethod = EComponentCreationMethod::UserConstructionScript;
+				splineMesh->RegisterComponentWithWorld(GetWorld());
+				splineMesh->AttachToComponent(spline, FAttachmentTransformRules::KeepRelativeTransform);
+				
+				const FVector& start = spline->GetLocationAtSplinePoint(ii, ESplineCoordinateSpace::Local);
+				const FVector& startTangent = spline->GetTangentAtSplinePoint(ii, ESplineCoordinateSpace::Local);
+				const FVector& end = spline->GetLocationAtSplinePoint(ii + 1, ESplineCoordinateSpace::Local);
+				const FVector& endTangent = spline->GetTangentAtSplinePoint(ii +1, ESplineCoordinateSpace::Local);
+
+				splineMesh->SetStartAndEnd(start, startTangent, end, endTangent, true);
+				splineMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+				_splineMeshs.Add(splineMesh);
+			}
+		}
+	}
+}
+
+void ABaseCharacter::ClearTrajectory()
+{
+	{
+		if (_currentSpline)
+		{
+			_currentSpline->ClearSplinePoints(true);
+		}
+		auto len = _splineMeshs.Num();
+
+		for (int ii = 0; ii < len; ++ii)
+		{
+			if (_splineMeshs[ii])
+			{
+				_splineMeshs[ii]->DestroyComponent();
+			}
+		}
+
+		_splineMeshs.Empty();
+	}
 }
 
 // Called every frame

@@ -41,6 +41,17 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	TArray<class USplineMeshComponent*> _splineMeshs;
+	UFUNCTION(Blueprintcallable)
+	void UpdateTrajectory(FVector startPos, FVector endPos, float arc, class USplineComponent* spline, class UStaticMesh* pMesh);
+	UFUNCTION(Blueprintcallable)
+	void ClearTrajectory();
+	class USplineComponent* _currentSpline;
+
+
+	UPROPERTY(BlueprintReadOnly)
+	FVector _projectileVelocity;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
