@@ -7,6 +7,7 @@
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "../ARProject.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -115,6 +116,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	BindASCInput();
 }
 
 void ABaseCharacter::InitializeStatus()
@@ -164,5 +166,17 @@ void ABaseCharacter::TryActiveAbility(int32 id)
 	}
 
 	_asc->TryActivateAbility(spec->Handle);
+}
+
+void ABaseCharacter::BindASCInput()
+{
+	if (false == _isBoundInput && GetAbilitySystemComponent() && IsValid(InputComponent))
+	{
+		FTopLevelAssetPath enumPath = FTopLevelAssetPath(FName("/Script/ARProject"), FName("ARProjAbilityID"));
+		GetAbilitySystemComponent()->BindAbilityActivationToInputComponent(InputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"), FString("CancelTarget")
+			, enumPath, static_cast<int32>(ARProjAbilityID::ConfirmTarget), static_cast<int32>(ARProjAbilityID::CancelTarget)));
+
+		_isBoundInput = true;
+	}
 }
 

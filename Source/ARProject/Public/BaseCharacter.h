@@ -64,4 +64,7 @@ public:
 
 	UFUNCTION(Blueprintcallable)
 	void TryActiveAbility(int32 id);
+
+	bool _isBoundInput;
+	void BindASCInput();
 };
